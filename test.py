@@ -18,8 +18,8 @@ import datetime
 if version_info.major != 3:
     raise Exception('use python 3')
 
-data_dir = "D:\\qqfile\\data\\"
-# data_dir =
+# data_dir = "D:\\qqfile\\data\\"
+data_dir = "H:\\data\\"
 
 os.chdir(data_dir)
 file_chdir = os.getcwd()
