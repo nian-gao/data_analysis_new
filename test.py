@@ -18,21 +18,24 @@ import datetime
 if version_info.major != 3:
     raise Exception('use python 3')
 
-os.chdir("D:/qqfile/data/")
+data_dir = "D:\\qqfile\\data\\"
+# data_dir =
+
+os.chdir(data_dir)
 file_chdir = os.getcwd()
 file_list = []
 # root D:/qqfile/data/2012/0/2012-05-28/
 for root, dirs, files in os.walk(file_chdir):
     for name in files:
         path = os.path.dirname(root)
-        if path == "D:\\qqfile\\data\\2014\\0":
-            # if root == "D:\\qqfile\\data\\2012\\0\\2012-05-28":
+        if path == data_dir + "2014\\0":
+            # if root == data_dir + "2012\\0\\2012-05-28":
             file_list.append(os.path.join(root, name))
-        # if root == "D:\\qqfile\\data\\2012\\0\\2012-05-28":
+        # if root == data_dir + "2012\\0\\2012-05-28":
         #     file_list.append(os.path.join(root, name))
-        # elif root == "D:\\qqfile\\data\\2012\\1\\2012-05-28":
+        # elif root == data_dir + "2012\\1\\2012-05-28":
         #     file_list.append(os.path.join(root, name))
-        # elif root == "D:\\qqfile\\data\\2012\\2\\2012-05-28":
+        # elif root == data_dir + "2012\\2\\2012-05-28":
         #     file_list.append(os.path.join(root, name))
         else:
             continue
