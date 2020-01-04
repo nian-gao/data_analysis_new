@@ -131,4 +131,5 @@ for row_index, row in df.iterrows():
         df_result.iloc[i:i + 1, :] += row
     if i == 2:
         break
+
 print(df_result[1])
