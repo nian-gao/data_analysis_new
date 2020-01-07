@@ -77,7 +77,6 @@ file_chdir = os.getcwd()
 file_list0 = []
 file_list1 = []
 file_list2 = []
-
 date_range = my_date_range('2012-01-01', '2012-06-30', 10)
 for root, dirs, files in os.walk(file_chdir):
     for name in files:
