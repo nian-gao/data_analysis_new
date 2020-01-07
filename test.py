@@ -5,10 +5,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import datetime
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 # import time
 # import keras
-# from sklearn.linear_model import LinearRegression
+
 # from sklearn.preprocessing import MinMaxScaler
 #
 # from keras.models import Sequential
@@ -99,4 +101,15 @@ result_df = pd.DataFrame()
 result_df = trans_data(df, file_list0, result_df, 0)
 result_df = trans_data(df, file_list1, result_df, 1)
 result_df = trans_data(df, file_list2, result_df, 2)
-print(result_df)
+# print(result_df)
+X = result_df.loc[:, range(2, 45)]
+y = result_df.loc[:, [45]]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.9, random_state=0)
+lin_reg = LinearRegression()
+model = lin_reg.fit(X_train, y_train)
+y_pred = lin_reg.predict(X_test)
+plt.figure()
+plt.plot(range(len(y_pred[1:130])), y_pred[1:130], 'b', label="predict")
+plt.plot(range(len(y_pred[1:130])), y_test[1:130], 'r', label="test")
+plt.legend(loc="upper right")
+plt.show()
