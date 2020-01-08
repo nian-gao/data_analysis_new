@@ -17,8 +17,8 @@ import time
 # from keras.models import Sequential
 # from keras.layers import LSTM
 # from keras.layers import Dense, Activation, Dropout
-# data_dir = "D:\\qqfile\\data\\"
-data_dir = "H:\\data\\"
+data_dir = "D:\\qqfile\\data\\"
+# data_dir = "H:\\data\\"
 
 if version_info.major != 3:
     raise Exception('use python 3')
@@ -58,6 +58,7 @@ def add_data_to_result(temp, date_list, res, y_value):
 
 def trans_data(data_frame, file_list, res_df, y_value):
     data_frame = init_data_frame(data_frame, file_list)
+    print('data frame inited ' + str(y_value), time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     date_list = []
     inner_temp = pd.DataFrame()
 
@@ -95,7 +96,7 @@ file_chdir = os.getcwd()
 file_list0 = []
 file_list1 = []
 file_list2 = []
-date_range = my_date_range('2012-01-01', '2018-12-31', 10)
+date_range = my_date_range('2012-01-01', '2012-06-30', 10)
 for root, dirs, files in os.walk(file_chdir):
     for name in files:
         path = os.path.dirname(root)
