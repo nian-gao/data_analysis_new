@@ -9,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
 import time
+
 # import keras
 
 # from sklearn.preprocessing import MinMaxScaler
@@ -16,9 +17,8 @@ import time
 # from keras.models import Sequential
 # from keras.layers import LSTM
 # from keras.layers import Dense, Activation, Dropout
-data_dir = "D:\\qqfile\\data\\"
-# data_dir = "H:\\data\\"
-
+# data_dir = "D:\\qqfile\\data\\"
+data_dir = "H:\\data\\"
 
 if version_info.major != 3:
     raise Exception('use python 3')
@@ -95,7 +95,7 @@ file_chdir = os.getcwd()
 file_list0 = []
 file_list1 = []
 file_list2 = []
-date_range = my_date_range('2012-12-15', '2013-01-15')
+date_range = my_date_range('2012-01-01', '2018-12-31', 10)
 for root, dirs, files in os.walk(file_chdir):
     for name in files:
         path = os.path.dirname(root)
@@ -115,10 +115,10 @@ for root, dirs, files in os.walk(file_chdir):
 print('files read finished time', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 df = pd.DataFrame()
 result_df = pd.DataFrame()
-result_df = trans_not_mid(df, file_list0, result_df, 0)
-result_df = trans_not_mid(df, file_list1, result_df, 1)
-result_df = trans_not_mid(df, file_list2, result_df, 2)
-# print(result_df)
+result_df = trans_data(df, file_list0, result_df, 0)
+result_df = trans_data(df, file_list1, result_df, 1)
+result_df = trans_data(df, file_list2, result_df, 2)
+print(len(result_df))
 X = result_df.loc[:, range(2, 45)]
 y = result_df.loc[:, [45]]
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
@@ -133,12 +133,12 @@ for i in range(len(y_pred)):
     else:
         y_pred[i][0] = round(y_pred[i][0])
 plt.figure()
-plt.plot(range(len(y_pred[0:130])), y_pred[0:130], 'b', label="predict")
-plt.plot(range(len(y_pred[0:130])), y_test[0:130], 'r', label="test")
+plt.plot(range(len(y_pred[0:100])), y_pred[0:100], 'b', label="predict")
+plt.plot(range(len(y_pred[0:100])), y_test[0:100], 'r', label="test")
 correct_items = 0
 total_items = 0
 y_test = y_test.reset_index()
-
+print(len(y_pred))
 for i in range(len(y_pred)):
     total_items += 1
     if y_pred[i][0] == y_test[45][i]:
