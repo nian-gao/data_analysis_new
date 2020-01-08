@@ -8,7 +8,7 @@ import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
-# import time
+import time
 # import keras
 
 # from sklearn.preprocessing import MinMaxScaler
@@ -22,6 +22,8 @@ data_dir = "D:\\qqfile\\data\\"
 
 if version_info.major != 3:
     raise Exception('use python 3')
+
+print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 
 def my_date_range(begin, end, time_delta):
@@ -104,12 +106,31 @@ result_df = trans_data(df, file_list2, result_df, 2)
 # print(result_df)
 X = result_df.loc[:, range(2, 45)]
 y = result_df.loc[:, [45]]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.9, random_state=0)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 lin_reg = LinearRegression()
 model = lin_reg.fit(X_train, y_train)
 y_pred = lin_reg.predict(X_test)
+for i in range(len(y_pred)):
+    if y_pred[i][0] < 0:
+        y_pred[i][0] = 0
+    elif y_pred[i][0] > 2:
+        y_pred[i][0] = 2
+    else:
+        y_pred[i][0] = round(y_pred[i][0])
 plt.figure()
-plt.plot(range(len(y_pred[1:130])), y_pred[1:130], 'b', label="predict")
-plt.plot(range(len(y_pred[1:130])), y_test[1:130], 'r', label="test")
+print(y_pred)
+plt.plot(range(len(y_pred[0:130])), y_pred[0:130], 'b', label="predict")
+plt.plot(range(len(y_pred[0:130])), y_test[0:130], 'r', label="test")
+correct_items = 0
+total_items = 0
+y_test = y_test.reset_index()
+
+for i in range(len(y_pred)):
+    total_items += 1
+    if y_pred[i][0] == y_test[45][i]:
+        correct_items += 1
+rate = correct_items / total_items
+print(round(rate, 3))
 plt.legend(loc="upper right")
 plt.show()
+print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
