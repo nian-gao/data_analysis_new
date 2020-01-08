@@ -23,10 +23,20 @@ data_dir = "D:\\qqfile\\data\\"
 if version_info.major != 3:
     raise Exception('use python 3')
 
-print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+print('start', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
 
-def my_date_range(begin, end, time_delta):
+def init_data_frame(data_frame, file_list):
+    for f in file_list:
+        data_frame = data_frame.append(pd.read_table(f, header=None, encoding='gb2312',
+                                                     sep='\\]\\[|\\[|\\]', engine='python'))
+    data_frame.drop(0, axis=1, inplace=True)
+    data_frame.drop(45, axis=1, inplace=True)
+    data_frame = data_frame.sort_values(1, 'index')
+    return data_frame.reset_index(drop=True)
+
+
+def my_date_range(begin, end, time_delta=1):
     dates = []
     dt = datetime.datetime.strptime(begin, "%Y-%m-%d")
     my_date = begin[:]
@@ -47,14 +57,7 @@ def add_data_to_result(temp, date_list, res, y_value):
 
 
 def trans_data(data_frame, file_list, res_df, y_value):
-    for f in file_list:
-        data_frame = data_frame.append(pd.read_table(f, header=None, encoding='gb2312',
-                                                     sep='\\]\\[|\\[|\\]', engine='python'))
-
-    data_frame.drop(0, axis=1, inplace=True)
-    data_frame.drop(45, axis=1, inplace=True)
-    data_frame = data_frame.sort_values(1, 'index')
-    data_frame = data_frame.reset_index(drop=True)
+    data_frame = init_data_frame(data_frame, file_list)
     date_list = []
     inner_temp = pd.DataFrame()
 
@@ -76,33 +79,45 @@ def trans_data(data_frame, file_list, res_df, y_value):
     return res_df
 
 
+def trans_not_mid(data_frame, file_list, res_df, y_value):
+    data_frame = init_data_frame(data_frame, file_list)
+
+    for r_index, r in data_frame.iterrows():
+        s = pd.Series([y_value], index=[45])
+        r = r.append(s)
+        r = r.sort_index(axis=0)
+        res_df = res_df.append(r, ignore_index=True)
+    return res_df
+
+
 os.chdir(data_dir)
 file_chdir = os.getcwd()
 file_list0 = []
 file_list1 = []
 file_list2 = []
-date_range = my_date_range('2012-01-01', '2012-06-30', 10)
+date_range = my_date_range('2012-12-15', '2013-01-15')
 for root, dirs, files in os.walk(file_chdir):
     for name in files:
         path = os.path.dirname(root)
         # if path == data_dir + "2014\\0":
         for d in date_range:
-            if root == data_dir + "2012\\0\\" + d:
+            if root == data_dir + d.split('-')[0] + "\\0\\" + d:
                 # if path == data_dir + "2012\\0":
                 file_list0.append(os.path.join(root, name))
-            elif root == data_dir + "2012\\1\\" + d:
+            elif root == data_dir + d.split('-')[0] + "\\1\\" + d:
                 file_list1.append(os.path.join(root, name))
             # elif path == data_dir + "2012\\2":
-            elif root == data_dir + "2012\\2\\" + d:
+            elif root == data_dir + d.split('-')[0] + "\\2\\" + d:
                 file_list2.append(os.path.join(root, name))
             else:
                 continue
 
+print('files read finished time', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 df = pd.DataFrame()
 result_df = pd.DataFrame()
-result_df = trans_data(df, file_list0, result_df, 0)
-result_df = trans_data(df, file_list1, result_df, 1)
-result_df = trans_data(df, file_list2, result_df, 2)
+result_df = trans_not_mid(df, file_list0, result_df, 0)
+result_df = trans_not_mid(df, file_list1, result_df, 1)
+result_df = trans_not_mid(df, file_list2, result_df, 2)
 # print(result_df)
 X = result_df.loc[:, range(2, 45)]
 y = result_df.loc[:, [45]]
@@ -118,7 +133,6 @@ for i in range(len(y_pred)):
     else:
         y_pred[i][0] = round(y_pred[i][0])
 plt.figure()
-print(y_pred)
 plt.plot(range(len(y_pred[0:130])), y_pred[0:130], 'b', label="predict")
 plt.plot(range(len(y_pred[0:130])), y_test[0:130], 'r', label="test")
 correct_items = 0
@@ -133,4 +147,4 @@ rate = correct_items / total_items
 print(round(rate, 3))
 plt.legend(loc="upper right")
 plt.show()
-print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+print('finished', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
