@@ -91,38 +91,51 @@ def trans_not_mid(data_frame, file_list, res_df, y_value):
     return res_df
 
 
+# get the result data_frame
+# cwd current work dir
+def get_result_df(cwd, date_range, tag):
+    files0 = []
+    files1 = []
+    files2 = []
+    for root, dirs, files in os.walk(cwd):
+        for name in files:
+            path = os.path.dirname(root)
+            # if path == data_dir + "2014\\0":
+            for d in date_range:
+                if root == data_dir + d.split('-')[0] + "\\0\\" + d:
+                    # if path == data_dir + "2012\\0":
+                    files0.append(os.path.join(root, name))
+                elif root == data_dir + d.split('-')[0] + "\\1\\" + d:
+                    files1.append(os.path.join(root, name))
+                # elif path == data_dir + "2012\\2":
+                elif root == data_dir + d.split('-')[0] + "\\2\\" + d:
+                    files2.append(os.path.join(root, name))
+                else:
+                    continue
+    print(tag + 'files read finished time', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    df = pd.DataFrame()
+    result_df = pd.DataFrame()
+    result_df = trans_data(df, files0, result_df, 0)
+    result_df = trans_data(df, files1, result_df, 1)
+    result_df = trans_data(df, files2, result_df, 2)
+    print(len(df), tag)
+    return result_df
+
+
 os.chdir(data_dir)
 file_chdir = os.getcwd()
 file_list0 = []
 file_list1 = []
 file_list2 = []
-date_range = my_date_range('2012-01-01', '2012-06-30', 10)
-for root, dirs, files in os.walk(file_chdir):
-    for name in files:
-        path = os.path.dirname(root)
-        # if path == data_dir + "2014\\0":
-        for d in date_range:
-            if root == data_dir + d.split('-')[0] + "\\0\\" + d:
-                # if path == data_dir + "2012\\0":
-                file_list0.append(os.path.join(root, name))
-            elif root == data_dir + d.split('-')[0] + "\\1\\" + d:
-                file_list1.append(os.path.join(root, name))
-            # elif path == data_dir + "2012\\2":
-            elif root == data_dir + d.split('-')[0] + "\\2\\" + d:
-                file_list2.append(os.path.join(root, name))
-            else:
-                continue
-
-print('files read finished time', time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
-df = pd.DataFrame()
-result_df = pd.DataFrame()
-result_df = trans_data(df, file_list0, result_df, 0)
-result_df = trans_data(df, file_list1, result_df, 1)
-result_df = trans_data(df, file_list2, result_df, 2)
-print(len(result_df))
-X = result_df.loc[:, range(2, 45)]
-y = result_df.loc[:, [45]]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+date_range_train = my_date_range('2012-01-01', '2014-12-31', 10)
+train_df = get_result_df(file_chdir, date_range_train)
+date_range_test = my_date_range('2015-01-01', '2015-12-31', 10)
+test_df = get_result_df(file_chdir, date_range_test)
+X_train = train_df.loc[:, range(2, 45)]
+y_train = train_df.loc[:, [45]]
+X_test = test_df.loc[:, range(2, 45)]
+y_test = test_df.loc[:, [45]]
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
 lin_reg = LinearRegression()
 model = lin_reg.fit(X_train, y_train)
 y_pred = lin_reg.predict(X_test)
